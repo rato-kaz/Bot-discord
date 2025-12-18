@@ -1,21 +1,43 @@
-from discord.ext import commands
+import json
+import logging
+
 import discord
+from discord.ext import commands
+
+logger = logging.getLogger("discord_bot.events")
+
+# Load config
+with open("config.json", encoding="utf-8") as f:
+    config = json.load(f)
+
+WELCOME_CHANNEL = config.get("welcome_channel", "general")
+MESSAGES = config.get("messages", {})
+
 
 class OnMemberJoin(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
-        # Tìm channel tên "general" hoặc id cụ thể bạn muốn gửi lời chào
-        channel = discord.utils.get(member.guild.text_channels, name="thông-báo📣")
+    async def on_member_join(self, member: discord.Member):
+        # Tìm channel theo tên từ config
+        channel = discord.utils.get(member.guild.text_channels, name=WELCOME_CHANNEL)
 
         if channel:
-            await channel.send(f"👋 Chào mừng {member.mention} đến với **{member.guild.name}**!")
+            welcome_msg = MESSAGES.get("welcome", "Chào mừng {member} đến với {server}!").format(
+                member=member.mention,
+                server=member.guild.name,
+            )
+            await channel.send(welcome_msg)
+            logger.info("Đã gửi welcome message cho %s trong server %s", member, member.guild.name)
         else:
-            print(f"Không tìm thấy channel phù hợp để gửi lời chào khi {member} tham gia.")
+            logger.warning(
+                "Không tìm thấy channel '%s' để gửi lời chào khi %s tham gia %s",
+                WELCOME_CHANNEL,
+                member,
+                member.guild.name,
+            )
 
-async def setup(bot):
+
+async def setup(bot: commands.Bot):
     await bot.add_cog(OnMemberJoin(bot))
-
-

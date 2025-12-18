@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment (sẽ mount từ host)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+data/logs/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+.docker/
+
+# Documentation
+README.md
+*.md
+
+# Test files
+test/
+tests/
+*_test.py
+notebooks/
+
+# Cache
+.cache/
+*.cache
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Other
+*.bak
+*.tmp
+*.temp

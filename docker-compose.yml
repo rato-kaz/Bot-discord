@@ -1,0 +1,35 @@
+services:
+  discord-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discord-bot
+    restart: unless-stopped
+    environment:
+      # Load từ .env file (không hardcode ở đây!)
+      # Required
+      - BOT_TOKEN=${BOT_TOKEN}
+      - LLM_KEY=${LLM_KEY}
+      - LLM_MODEL_NAME=${LLM_MODEL_NAME:-gpt-4.1}
+      - LLM_API=${LLM_API}
+      - LLM_VERSION=${LLM_VERSION:-2025-01-01-preview}
+      # Optional (có default để tránh warning)
+      - HF_API_KEY=${HF_API_KEY:-}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID:-}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET:-}
+      - MONGO_URL=${MONGO_URL:-}
+      - OWNER_ID=${OWNER_ID:-}
+    volumes:
+      # Mount .env file (nếu muốn edit mà không rebuild)
+      - ./.env:/app/.env:ro
+      # Mount config.json nếu muốn edit
+      - ./config.json:/app/config.json:ro
+      # Mount logs nếu muốn persist
+      - ./data/logs:/app/data/logs
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge
+

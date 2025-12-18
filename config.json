@@ -1,5 +1,26 @@
 {
-    "prefix": "!",
-    "default_guild_id": "123456789012345678"
+  "prefix": "!",
+  "welcome_channel": "thông-báo📣",
+  "llm": {
+    "system_prompt": "Bạn là một trợ lý thân thiện và hữu ích.",
+    "max_tokens": 500,
+    "temperature": 0.7,
+    "daily_limit": 10
+  },
+  "huggingface": {
+    "model_url": "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+    "timeout": 60
+  },
+  "messages": {
+    "need_voice_channel": "❌ Bạn cần tham gia voice channel trước!",
+    "bot_already_playing": "🔊 Bot đang phát nhạc rồi. Hãy chờ hoặc dùng lệnh `{stop_cmd}`.",
+    "searching": "🔎 Đang tìm kiếm: `{query}`...",
+    "now_playing": "🎵 Đang phát: **{title}**",
+    "stopped": "⏹️ Đã dừng và rời voice channel.",
+    "bot_not_in_voice": "❌ Bot không đang ở trong voice channel.",
+    "spotify_error": "❌ Không thể lấy thông tin từ Spotify. Kiểm tra lại cấu hình hoặc link.",
+    "ping_response": "🏓 Pong!",
+    "welcome": "👋 Chào mừng {member} đến với **{server}**!",
+    "error_generic": "❌ Đã xảy ra lỗi khi chạy lệnh. Thử lại sau hoặc liên hệ admin."
   }
-  
+}

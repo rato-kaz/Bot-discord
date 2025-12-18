@@ -60,6 +60,33 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+4. **Cài đặt FFmpeg (BẮT BUỘC cho tính năng phát nhạc)**
+
+   **Windows:**
+   - Tải FFmpeg từ: https://www.gyan.dev/ffmpeg/builds/ (chọn "ffmpeg-release-essentials.zip")
+   - Giải nén vào thư mục (ví dụ: `C:\ffmpeg`)
+   - Thêm vào PATH:
+     - Mở "Environment Variables" trong Windows Settings
+     - Thêm `C:\ffmpeg\bin` vào PATH
+     - Hoặc copy `ffmpeg.exe` vào thư mục bot
+   - Kiểm tra: Mở CMD và chạy `ffmpeg -version`
+
+   **Linux (Ubuntu/Debian):**
+   ```bash
+   sudo apt update
+   sudo apt install ffmpeg
+   ```
+
+   **macOS:**
+   ```bash
+   brew install ffmpeg
+   ```
+
+   **Hoặc dùng conda:**
+   ```bash
+   conda install -c conda-forge ffmpeg
+   ```
+
 ## ▶️ Chạy bot
 ```
 python bot.py
@@ -85,20 +112,69 @@ Tự động gửi lời chào khi có người mới vào server
 
 - !imagine <prompt> – tạo ảnh từ văn bản
 
+## 🐳 Chạy với Docker
+
+### Yêu cầu
+- Docker và Docker Compose đã được cài đặt
+- File `.env` đã được cấu hình với các biến môi trường cần thiết
+
+### Cách chạy
+
+1. **Build và chạy với Docker Compose (Khuyến nghị):**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Hoặc build và chạy thủ công:**
+   ```bash
+   # Build image
+   docker build -t discord-bot .
+
+   # Chạy container
+   docker run -d \
+     --name discord-bot \
+     --restart unless-stopped \
+     --env-file .env \
+     discord-bot
+   ```
+
+3. **Xem logs:**
+   ```bash
+   docker-compose logs -f
+   # hoặc
+   docker logs -f discord-bot
+   ```
+
+4. **Dừng bot:**
+   ```bash
+   docker-compose down
+   # hoặc
+   docker stop discord-bot
+   ```
+
+### Biến môi trường cần thiết trong `.env`:
+```env
+BOT_TOKEN=your-discord-bot-token
+LLM_KEY=your-llm-api-key
+LLM_MODEL_NAME=gpt-4.1
+LLM_API=https://fptllm.openai.azure.com
+LLM_VERSION=2025-01-01-preview
+HF_API_KEY=your-huggingface-key (optional)
+SPOTIFY_CLIENT_ID=your-spotify-id (optional)
+SPOTIFY_CLIENT_SECRET=your-spotify-secret (optional)
+MONGO_URL=your-mongodb-url (optional)
+OWNER_ID=your-discord-user-id (optional)
+```
+
 ## 🌐 Triển khai
 
 Bạn có thể deploy bot bằng:
 
-Heroku (dễ dàng, miễn phí giới hạn)
-
-Railway.app
-
-Docker
-
-VPS riêng
-
-
-Dùng GitHub Secrets nếu deploy qua CI/CD
+- **Docker** (đã có sẵn Dockerfile và docker-compose.yml)
+- **Railway.app** (hỗ trợ Docker)
+- **Heroku** (cần thêm buildpack cho FFmpeg)
+- **VPS riêng** (dùng Docker hoặc chạy trực tiếp)
+- **GitHub Actions** (CI/CD với Docker)
 
 ## 📜 License
 
