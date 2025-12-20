@@ -21,10 +21,9 @@ with open("config.json", encoding="utf-8") as f:
 LLM_CONFIG = config.get("llm", {})
 
 # Đọc từ .env
-LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "gpt-4.1")
-LLM_KEY = os.getenv("LLM_KEY", "")
-LLM_API = os.getenv("LLM_API", "https://fptllm.openai.azure.com")
-LLM_VERSION = os.getenv("LLM_VERSION", "2025-01-01-preview")
+LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME")
+LLM_KEY = os.getenv("LLM_KEY")
+LLM_API = os.getenv("LLM_API")
 
 # Đọc từ config.json
 SYSTEM_PROMPT = LLM_CONFIG.get("system_prompt", "Bạn là một trợ lý thân thiện.")
@@ -49,7 +48,6 @@ class ChatBot(commands.Cog):
 
             client = AzureOpenAI(
                 api_key=LLM_KEY,
-                api_version=LLM_VERSION,
                 azure_endpoint=LLM_API,
             )
             logger.info(
