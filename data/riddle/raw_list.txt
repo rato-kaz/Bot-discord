@@ -1,0 +1,10 @@
+# Format: tên_file|đáp_án_1,đáp_án_2|chủ_đề
+# Mỗi dòng là một câu đố
+# Bỏ qua dòng trống và dòng bắt đầu bằng #
+
+# Ví dụ:
+ca_heo.jpg|cá heo,dolphin,con cá heo|Đại dương
+cai_ghe.jpg|ghế,cái ghế,chair|Đồ nội thất
+mat_troi.jpg|mặt trời,sun,ông mặt trời|Thiên văn
+con_meo.jpg|mèo,con mèo,cat|Động vật
+cay_dua.jpg|cây dừa,dừa,coconut tree|Thực vật

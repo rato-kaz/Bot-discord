@@ -1,0 +1,107 @@
+======================================================================
+TÊN DỰ ÁN: AI RIDDLE MASTER
+LOẠI HÌNH: GAME GIẢI ĐỐ TƯƠNG TÁC (INTERACTIVE RIDDLE GAME)
+KIẾN TRÚC: HYBRID AI (KẾT HỢP VLM LOCAL & CLOUD LLM)
+NGƯỜI THỰC HIỆN: [TÊN CỦA BẠN]
+======================================================================
+
+1. TỔNG QUAN GIẢI PHÁP (OVERVIEW)
+----------------------------------------------------------------------
+Trò chơi sử dụng kiến trúc Hybrid (Lai) để tối ưu hóa hiệu năng và trải nghiệm người dùng, giải quyết bài toán độ trễ và chi phí của các mô hình đa phương thức.
+
+- Vấn đề: VLM Local (32B) có khả năng nhìn tốt nhưng suy luận ngôn ngữ kém và chậm. Cloud LLM (500B+) suy luận tốt nhưng không nhìn thấy ảnh.
+- Giải pháp: 
+  + Sử dụng VLM Local để "số hóa" hình ảnh thành văn bản mô tả (Blind Captioning) trong giai đoạn tiền xử lý (Offline).
+  + Sử dụng Cloud LLM để xử lý logic trò chơi và giao tiếp với người dùng dựa trên văn bản mô tả trong thời gian thực (Runtime).
+
+2. KIẾN TRÚC HỆ THỐNG (SYSTEM ARCHITECTURE)
+----------------------------------------------------------------------
+Hệ thống được chia thành 2 giai đoạn xử lý:
+
+GIAI ĐOẠN A: OFFLINE PRE-PROCESSING (XỬ LÝ TRƯỚC)
+- Công cụ: Local VLM (32B Parameters).
+- Đầu vào: Kho hình ảnh thô (.jpg, .png) và file danh sách từ khóa (.txt).
+- Xử lý: Model quét qua từng ảnh, sinh ra đoạn mô tả chi tiết các đặc điểm thị giác (màu sắc, hình dáng, bối cảnh) mà KHÔNG nhắc đến tên vật thể.
+- Đầu ra: File cơ sở dữ liệu (game_data.json) chứa metadata của màn chơi.
+
+GIAI ĐOẠN B: RUNTIME GAME LOOP (VÒNG LẶP TRÒ CHƠI)
+- Công cụ: Cloud LLM API (OpenAI/Gemini/Claude) + Game Engine (Python).
+- Xử lý: 
+  + Load dữ liệu từ JSON.
+  + Gửi mô tả (Context) + Câu hỏi người dùng (Prompt) lên Cloud LLM.
+  + Cloud LLM đóng vai "Quản trò", trả lời gợi ý dựa trên mô tả.
+  + Hệ thống so khớp câu trả lời của người chơi với đáp án.
+
+3. CẤU TRÚC DỮ LIỆU & THƯ MỤC (DATA STRUCTURE)
+----------------------------------------------------------------------
+Project_Folder/
+|-- assets/
+|   |-- images/              (Chứa file ảnh nguồn)
+|       |-- ca_heo.jpg
+|       |-- cai_ghe.png
+|
+|-- data/
+|   |-- raw_list.txt         (Danh sách từ khóa gốc)
+|   |-- game_data.json       (Database chính của game)
+|
+|-- src/
+|   |-- generator.py         (Script chạy VLM Local - Offline)
+|   |-- game_engine.py       (Script xử lý logic game - Runtime)
+|   |-- utils.py             (Các hàm hỗ trợ: load ảnh, fuzzy match)
+|
+|-- main.py                  (Giao diện người dùng - Streamlit/Console)
+
+* Cấu trúc mẫu của file 'game_data.json':
+[
+  {
+    "id": 1,
+    "filename": "ca_heo.jpg",
+    "answers": ["cá heo", "dolphin", "con cá heo"],
+    "blind_description": "Hình ảnh một sinh vật biển da trơn màu xám, mỏ dài, đang nhảy lên khỏi mặt nước biển xanh..."
+  }
+]
+
+4. CHI TIẾT CHỨC NĂNG (MODULE SPECIFICATIONS)
+----------------------------------------------------------------------
+
+MODULE 1: THE EYE (MẮT THẦN - GENERATOR)
+- Nhiệm vụ: Chuyển đổi hình ảnh sang văn bản mô tả ẩn danh.
+- Prompt Kỹ thuật cho VLM: 
+  "Mô tả chi tiết hình ảnh này về mặt thị giác. QUY TẮC: Không được nhắc đến tên gọi [TÊN_VẬT_THỂ]. Nếu cần, hãy gọi là 'đối tượng' hoặc 'sinh vật'."
+
+MODULE 2: THE BRAIN (BỘ NÃO - CHATBOT)
+- Nhiệm vụ: Đóng vai quản trò, giao tiếp với người chơi.
+- System Prompt cho Cloud LLM:
+  "Bạn là RiddleMaster. Nhiệm vụ: Trả lời câu hỏi gợi ý dựa trên đoạn mô tả [BLIND_DESCRIPTION]. Luật: Không tiết lộ tên vật thể. Trả lời hóm hỉnh, ngắn gọn."
+
+MODULE 3: GAME LOGIC CORE
+- Chức năng:
+  + Phân loại ý định người dùng (Hỏi gợi ý hay Đoán đáp án).
+  + Fuzzy Matching: So sánh chuỗi ký tự người dùng nhập với đáp án (chấp nhận sai số chính tả nhỏ hoặc viết hoa/thường).
+  + Quản lý trạng thái: Đếm số lượt hỏi, tính điểm.
+
+5. KỊCH BẢN NGƯỜI DÙNG (USER FLOW)
+----------------------------------------------------------------------
+Bước 1: Game hiển thị thông báo "Tôi đang giữ một hình ảnh bí mật". (Ảnh bị che hoặc làm mờ).
+Bước 2: Người dùng nhập câu hỏi (VD: "Nó là con gì?").
+Bước 3: Hệ thống gửi câu hỏi + Mô tả ảnh lên Cloud LLM.
+Bước 4: LLM trả lời (VD: "Đây là một loài vật sống dưới nước, rất thông minh").
+Bước 5: Người dùng đoán (VD: "Cá mập").
+Bước 6: Hệ thống kiểm tra đáp án.
+        - Nếu Sai: LLM đưa ra gợi ý trêu chọc.
+        - Nếu Đúng: Hiển thị ảnh gốc và chúc mừng.
+
+6. LỘ TRÌNH PHÁT TRIỂN (ROADMAP)
+----------------------------------------------------------------------
+Giai đoạn 1: Data Preparation
+- Thu thập hình ảnh và từ khóa.
+- Xây dựng script Generator dùng VLM Local.
+
+Giai đoạn 2: Core Logic Development
+- Xây dựng module kết nối Cloud LLM API.
+- Viết thuật toán so khớp đáp án (String matching).
+
+Giai đoạn 3: UI & Deployment
+- Xây dựng giao diện tương tác (Web App).
+- Tối ưu hóa Prompt để tránh việc AI lộ đáp án.
+======================================================================

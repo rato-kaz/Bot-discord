@@ -36,6 +36,7 @@ INITIAL_COGS = [
     "cogs.welcome",
     "cogs.stable_diffusion",
     "cogs.chatbot",
+    "cogs.riddle_game",
 ]
 
 EVENTS = [
