@@ -152,20 +152,6 @@ Tự động gửi lời chào khi có người mới vào server
    docker stop discord-bot
    ```
 
-### Biến môi trường cần thiết trong `.env`:
-```env
-BOT_TOKEN=your-discord-bot-token
-LLM_KEY=your-llm-api-key
-LLM_MODEL_NAME=gpt-4.1
-LLM_API=https://fptllm.openai.azure.com
-LLM_VERSION=2025-01-01-preview
-HF_API_KEY=your-huggingface-key (optional)
-SPOTIFY_CLIENT_ID=your-spotify-id (optional)
-SPOTIFY_CLIENT_SECRET=your-spotify-secret (optional)
-MONGO_URL=your-mongodb-url (optional)
-OWNER_ID=your-discord-user-id (optional)
-```
-
 ## 🌐 Triển khai
 
 Bạn có thể deploy bot bằng:
